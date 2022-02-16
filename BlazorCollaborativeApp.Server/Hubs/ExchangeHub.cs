@@ -6,7 +6,7 @@ namespace BlazorCollaborativeApp.Server.Hubs
     {
         public async Task NotifyChangesAsync(string sId, object data)
         {
-            await Clients.All.SendAsync("OnChange", sId, data);
+            await Clients.Others.SendAsync("OnChange", sId, data);
             System.Diagnostics.Debug.WriteLine("A change occured", "OnChange");
         }
     }
