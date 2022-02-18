@@ -17,7 +17,7 @@ namespace BlazorCollaborativeApp.Shared
         {
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = $"{configuration["Redis:Host"]}:{configuration["Redis:Port"]}";
+                options.Configuration = $"localhost,abortConnect=false,connectTimeout=30000,responseTimeout=30000";
                 options.InstanceName = "blazorCollaborativeAppCache"; 
             });
 

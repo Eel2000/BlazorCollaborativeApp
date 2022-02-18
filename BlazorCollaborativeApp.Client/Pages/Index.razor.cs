@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Collections.ObjectModel;
 using BlazorCollaborativeApp.Shared.Services.Intefaces;
+using System.Net.Http.Json;
 
 namespace BlazorCollaborativeApp.Client.Pages
 {
     public partial class Index : ComponentBase
     {
-        [Inject] ICachingService caching { get; set; }
+        [Inject] HttpClient client { get; set; }
+
         const string sId = "1";
         private string? Text { get; set; }
         private string? change { get; set; }
@@ -194,8 +196,9 @@ namespace BlazorCollaborativeApp.Client.Pages
                 }
             };
 
-            var data = await caching.GetAsync<Sheet>("1");
             Sheets.Add(sheet);
+            var res = await client.PostAsJsonAsync("https://localhost:7012/api/Caching/cache-data", sheet);
+            
 
             await hubConnection.InvokeAsync("AddNoteAsync", sId, sheet);
         }
