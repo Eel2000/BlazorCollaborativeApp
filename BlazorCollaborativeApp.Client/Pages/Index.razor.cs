@@ -48,7 +48,8 @@ namespace BlazorCollaborativeApp.Client.Pages
             await hubConnection.StartAsync();
 
             //initilizing sheets
-            FilledData();
+            //FilledData();
+            Sheets = new ObservableCollection<Sheet>();
         }
 
         private void FilledData()
@@ -193,9 +194,6 @@ namespace BlazorCollaborativeApp.Client.Pages
             Sheets.Add(sheet);
 
             await hubConnection.InvokeAsync("AddNoteAsync", sId, sheet);
-
-            //Console.WriteLine(sheet.Title);
-            //Console.WriteLine(sheet.Title, "typing-zone");
         }
 
         private async void Remove(Sheet sheet)
@@ -210,7 +208,6 @@ namespace BlazorCollaborativeApp.Client.Pages
             {
                 Text = change.Value.ToString();
                 await hubConnection.InvokeAsync("NotifyChangesAsync", sId, change.Value);
-                //Console.WriteLine(change.Value, "typing-zone");
             }
         }
     }

@@ -8,10 +8,10 @@
 <hr />
 <div>
     <EditForm Model="@SheetModel" OnInvalidSubmit="@Send">
-        <InputText id="title" @bind-Value="SheetModel.Title" />
-        <InputText id="data" @bind-Value="SheetModel.Data" />
+        <InputText id="title" @bind-Value="SheetModel.Title" class="form-control form-control-sm" />
+        <InputText id="data" @bind-Value="SheetModel.Data" class="form-control form-control-sm" />
 
-        <button type="submit" @onclick="@Send">Submit</button>
+        <button type="submit" @onclick="@Send" class="btn btn-primary text-white">Submit</button>
     </EditForm>
 </div>
 
