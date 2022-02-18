@@ -2,17 +2,29 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Untitled project.</h1>
 
-<textarea type="text" id="typing-zone" class="form-control form-control-plaintext" style="height: 400px; width: 600px;" placeholder="type here the draft" @oninput="OnChangeAsync" value="@change"></textarea>
-<hr />
-<div>
-    <EditForm Model="@SheetModel" OnInvalidSubmit="@Send">
-        <InputText id="title" @bind-Value="SheetModel.Title" class="form-control form-control-sm" />
-        <InputText id="data" @bind-Value="SheetModel.Data" class="form-control form-control-sm" />
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-8">
+            <!--Sticky notes area-->
+            <div class="container-fluid">
+                <StickyNotes BackGroundColor="yellow-bg" Sheets="@Sheets" Action="Remove"></StickyNotes>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <textarea type="text" id="typing-zone" class="form-control form-control-plaintext" style="height: 400px; width: 600px;" placeholder="type here the draft" @oninput="OnChangeAsync" value="@change"></textarea>
+            </div>
+            <div class="row">
+                <EditForm Model="@SheetModel" OnInvalidSubmit="@Send">
+                    <InputText @bind-Value="SheetModel.Title" class="form-control form-control-sm my-2 fp" style="width: 250px;" />
+                    <InputText @bind-Value="SheetModel.Data" class="form-control form-control-sm my-2 fp" style="width: 250px;" />
 
-        <button type="submit" @onclick="@Send" class="btn btn-primary text-white">Submit</button>
-    </EditForm>
+                    <button type="submit" @onclick="@Send" class="btn btn-primary text-white">Submit</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
 </div>
 
-<StickyNotes BackGroundColor="lazur-bg" Sheets="@Sheets" Action="Remove"></StickyNotes>
