@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Collections.ObjectModel;
+using BlazorCollaborativeApp.Shared.Services.Intefaces;
 
 namespace BlazorCollaborativeApp.Client.Pages
 {
     public partial class Index : ComponentBase
     {
+        [Inject] ICachingService caching { get; set; }
         const string sId = "1";
         private string? Text { get; set; }
         private string? change { get; set; }
@@ -33,6 +35,7 @@ namespace BlazorCollaborativeApp.Client.Pages
              {
                  var sheet = Data;
                  Sheets.Add(sheet);
+
                  StateHasChanged();
                  Console.WriteLine("New Note received");
              });
@@ -191,6 +194,7 @@ namespace BlazorCollaborativeApp.Client.Pages
                 }
             };
 
+            var data = await caching.GetAsync<Sheet>("1");
             Sheets.Add(sheet);
 
             await hubConnection.InvokeAsync("AddNoteAsync", sId, sheet);
