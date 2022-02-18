@@ -16,10 +16,10 @@
                                 @foreach (var content in item.Contents.OrderBy(x => x.Line))
                                 {
                                     @content.Data
-                                    <br/>
+                                    <br />
                                 }
                             </p>
-                            <a href="#" class="text-danger pull-right"><i class="fa fa-trash-o "></i></a>
+                            <a @onclick="(()=>Action(item))" class="text-danger pull-right"><i class="fa fa-trash-o "></i></a>
                         </div>
                     </li>
                 }
@@ -62,5 +62,5 @@
     /// The Action to call when clicking on delete note.
     /// </summary>
     [Parameter]
-    public ValueTask Action { get; set; }
+    public Action<Sheet> Action { get; set; }
 }

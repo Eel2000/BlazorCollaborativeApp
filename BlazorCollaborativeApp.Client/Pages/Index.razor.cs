@@ -23,10 +23,10 @@ namespace BlazorCollaborativeApp.Client.Pages
 
             hubConnection.On<string, object>("OnChange", (sId, Data) =>
              {
-                     var chg = Data.ToString();
-                     change = chg;
-                     StateHasChanged();
-                     Console.WriteLine(change);
+                 var chg = Data.ToString();
+                 change = chg;
+                 StateHasChanged();
+                 Console.WriteLine(change);
              });
 
             hubConnection.On<string, Sheet>("OnNoteAdded", (sId, Data) =>
@@ -36,6 +36,14 @@ namespace BlazorCollaborativeApp.Client.Pages
                  StateHasChanged();
                  Console.WriteLine("New Note received");
              });
+
+            hubConnection.On<string, Sheet>("OnNoteDeleted", (sId, sheet) =>
+            {
+                var toDelete = sheet;
+                Sheets.Remove(Sheets.Where(x => x.Id == toDelete.Id).First());
+                StateHasChanged();
+                Console.WriteLine("A sheet was removed");
+            });
 
             await hubConnection.StartAsync();
 
@@ -188,6 +196,12 @@ namespace BlazorCollaborativeApp.Client.Pages
 
             //Console.WriteLine(sheet.Title);
             //Console.WriteLine(sheet.Title, "typing-zone");
+        }
+
+        private async void Remove(Sheet sheet)
+        {
+            Sheets.Remove(sheet);
+            await hubConnection.InvokeAsync("RemoveNoteAsync", sId, sheet);
         }
 
         private async void OnChangeAsync(ChangeEventArgs change)
