@@ -12,4 +12,8 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BlazorCollaborativeApp.Shared\BlazorCollaborativeApp.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

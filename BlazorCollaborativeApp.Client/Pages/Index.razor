@@ -5,5 +5,14 @@
 <h1>Hello, world!</h1>
 
 <textarea type="text" id="typing-zone" class="form-control form-control-plaintext" style="height: 400px; width: 600px;" placeholder="type here the draft" @oninput="OnChangeAsync" value="@change"></textarea>
+<hr />
+<div>
+    <EditForm Model="@SheetModel" OnInvalidSubmit="@Send">
+        <InputText id="title" @bind-Value="SheetModel.Title"/>
+        <InputText id="data" @bind-Value="SheetModel.Data"/>
 
+        <button type="submit" @onclick="@Send">Submit</button>
+    </EditForm>
+</div>
 
+<StickyNotes BackGroundColor="lazur-bg" Sheets="@Sheets"></StickyNotes>

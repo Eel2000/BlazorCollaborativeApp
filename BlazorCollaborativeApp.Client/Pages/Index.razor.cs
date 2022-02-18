@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorCollaborativeApp.Shared.Models;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Collections.ObjectModel;
 
 namespace BlazorCollaborativeApp.Client.Pages
 {
@@ -8,6 +10,9 @@ namespace BlazorCollaborativeApp.Client.Pages
         const string sId = "1";
         private string? Text { get; set; }
         private string? change { get; set; }
+
+        private ObservableCollection<Sheet> Sheets { get; set; } = default!;
+        private SheetModel? SheetModel = new();
 
 
         private HubConnection? hubConnection;
@@ -18,20 +23,171 @@ namespace BlazorCollaborativeApp.Client.Pages
 
             hubConnection.On<string, object>("OnChange", (sId, Data) =>
              {
-                 var chg = Data.ToString();
-                 change = chg;
+                     var chg = Data.ToString();
+                     change = chg;
+                     StateHasChanged();
+                     Console.WriteLine(change);
+             });
+
+            hubConnection.On<string, Sheet>("OnNoteAdded", (sId, Data) =>
+             {
+                 var sheet = Data;
+                 Sheets.Add(sheet);
                  StateHasChanged();
-                 Console.WriteLine(change);
+                 Console.WriteLine("New Note received");
              });
 
             await hubConnection.StartAsync();
+
+            //initilizing sheets
+            FilledData();
+        }
+
+        private void FilledData()
+        {
+            var pjUser = new User
+            {
+                Username = "Mr Oh!"
+            };
+            var pjUser2 = new User
+            {
+                Username = "Mr Bean"
+            };
+
+            var pj = new Project
+            {
+                Description = "The project to create sticky note on blazor",
+                Id = Guid.NewGuid().ToString(),
+                Name = "Blazor Brain storming project.",
+                OwnerId = pjUser.Id,
+            };
+            var pj2 = new Project
+            {
+                Description = "Enumerates sorting Algorithms.",
+                Id = Guid.NewGuid().ToString(),
+                Name = "Sorting Algorithms",
+                OwnerId = pjUser2.Id,
+            };
+
+            var pjSheet = new Sheet
+            {
+                EditDate = DateTime.Now,
+                Project = pj,
+                ProjectId = pj.Id,
+                SessionId = sId,
+                Title = "Code Algorithms."
+            };
+            var pjSheet2 = new Sheet
+            {
+                EditDate = DateTime.Now,
+                Project = pj2,
+                ProjectId = pj2.Id,
+                SessionId = sId,
+                Title = "Find a suitable name"
+            };
+
+            var pjSheetContents = new List<Content>
+            {
+                new Content
+                {
+                    Data="Good morning world.",
+                    Line=1,
+                    SheetId = pjSheet.Id,
+                    Sheet = pjSheet,
+                    User=pjUser,
+                    UserId=pjUser.Id,
+                }, new Content
+                {
+                    Data="Good morning world.",
+                    Line=2,
+                    SheetId = pjSheet.Id,
+                    Sheet = pjSheet,
+                    User=pjUser,
+                    UserId=pjUser.Id,
+                }, new Content
+                {
+                    Data="Aero Call.",
+                    Line=3,
+                    SheetId = pjSheet.Id,
+                    Sheet = pjSheet,
+                    User=pjUser,
+                    UserId=pjUser.Id,
+                }, new Content
+                {
+                    Data="Engine call.",
+                    Line=4,
+                    SheetId = pjSheet.Id,
+                    Sheet = pjSheet,
+                    User=pjUser,
+                    UserId=pjUser.Id,
+                },
+            };
+            var pjSheetContents2 = new List<Content>
+            {
+                new Content
+                {
+                    Data="Sort bubbles",
+                    Line=1,
+                    SheetId = pjSheet2.Id,
+                    Sheet = pjSheet2,
+                    User=pjUser2,
+                    UserId=pjUser2.Id,
+                }, new Content
+                {
+                    Data="Binary search",
+                    Line=2,
+                    SheetId = pjSheet2.Id,
+                    Sheet = pjSheet2,
+                    User=pjUser2,
+                    UserId=pjUser2.Id,
+                }, new Content
+                {
+                    Data="Sort general",
+                    Line=3,
+                    SheetId = pjSheet2.Id,
+                    Sheet = pjSheet2,
+                    User=pjUser2,
+                    UserId=pjUser2.Id,
+                }, new Content
+                {
+                    Data="Engine call.",
+                    Line=4,
+                    SheetId = pjSheet2.Id,
+                    Sheet = pjSheet2,
+                    User=pjUser2,
+                    UserId=pjUser2.Id,
+                },
+            };
+
+            pjSheet.Contents = pjSheetContents;
+            pjSheet2.Contents = pjSheetContents2;
+            Sheets = new ObservableCollection<Sheet>
+            {
+                pjSheet,pjSheet2
+            };
+
         }
 
         private async void Send()
         {
-            await hubConnection.InvokeAsync("NotifyChangesAsync", sId, Text);
-            Console.WriteLine(Text);
-            System.Diagnostics.Debug.WriteLine(Text, "typing-zone");
+            var sheet = new Sheet();
+            sheet.Title = SheetModel?.Title;
+            sheet.Contents = new ObservableCollection<Content>
+            {
+                new Content
+                {
+                    SheetId = sheet.Id,
+                    Data = SheetModel?.Data,
+                    Line = SheetModel.Line
+                }
+            };
+
+            Sheets.Add(sheet);
+
+            await hubConnection.InvokeAsync("AddNoteAsync", sId, sheet);
+
+            //Console.WriteLine(sheet.Title);
+            //Console.WriteLine(sheet.Title, "typing-zone");
         }
 
         private async void OnChangeAsync(ChangeEventArgs change)
@@ -40,8 +196,15 @@ namespace BlazorCollaborativeApp.Client.Pages
             {
                 Text = change.Value.ToString();
                 await hubConnection.InvokeAsync("NotifyChangesAsync", sId, change.Value);
-                System.Diagnostics.Debug.WriteLine(change.Value, "typing-zone");
+                //Console.WriteLine(change.Value, "typing-zone");
             }
         }
+    }
+
+    public class SheetModel
+    {
+        public string? Title { get; set; }
+        public string? Data { get; set; }
+        public int Line { get; set; }
     }
 }
