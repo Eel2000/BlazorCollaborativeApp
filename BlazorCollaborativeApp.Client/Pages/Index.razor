@@ -2,8 +2,29 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Untitled project.</h1>
 
-Welcome to your new app.
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-8">
+            <!--Sticky notes area-->
+            <div class="container-fluid">
+                <StickyNotes BackGroundColor="yellow-bg" Sheets="@Sheets" Action="Remove"></StickyNotes>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <textarea type="text" id="typing-zone" class="form-control form-control-plaintext" style="height: 400px; width: 600px;" placeholder="type here the draft" @oninput="OnChangeAsync" value="@change"></textarea>
+            </div>
+            <div class="row">
+                <EditForm Model="@SheetModel" OnInvalidSubmit="@Send">
+                    <InputText @bind-Value="SheetModel.Title" class="form-control form-control-sm my-2 fp" style="width: 250px;" />
+                    <InputText @bind-Value="SheetModel.Data" class="form-control form-control-sm my-2 fp" style="width: 250px;" />
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+                    <button type="submit" @onclick="@Send" class="btn btn-primary text-white">Submit</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+

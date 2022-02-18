@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorCollaborativeApp.Server", "BlazorCollaborativeApp.Server\BlazorCollaborativeApp.Server.csproj", "{4227E685-9219-4988-9519-A94DE77D3541}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorCollaborativeApp.Server", "BlazorCollaborativeApp.Server\BlazorCollaborativeApp.Server.csproj", "{4227E685-9219-4988-9519-A94DE77D3541}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorCollaborativeApp.Client", "BlazorCollaborativeApp.Client\BlazorCollaborativeApp.Client.csproj", "{F896DAC8-FD70-4357-9145-89846781D6D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorCollaborativeApp.Client", "BlazorCollaborativeApp.Client\BlazorCollaborativeApp.Client.csproj", "{F896DAC8-FD70-4357-9145-89846781D6D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorCollaborativeApp.Shared", "BlazorCollaborativeApp.Shared\BlazorCollaborativeApp.Shared.csproj", "{94620C24-39CB-4677-B8D2-5653A2C5B6F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorCollaborativeApp.Shared", "BlazorCollaborativeApp.Shared\BlazorCollaborativeApp.Shared.csproj", "{94620C24-39CB-4677-B8D2-5653A2C5B6F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
