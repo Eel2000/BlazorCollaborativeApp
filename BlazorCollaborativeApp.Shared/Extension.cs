@@ -2,6 +2,7 @@
 using BlazorCollaborativeApp.Shared.Services.Intefaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,12 @@ namespace BlazorCollaborativeApp.Shared
 
         public static void RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
+            var redisConfig = ConfigurationOptions.Parse($"{configuration["Redis:Host"]}:{configuration["Redis:Port"]}");
+            redisConfig.AbortOnConnectFail = false;
+            redisConfig.AllowAdmin = true;
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = $"localhost,abortConnect=false,connectTimeout=30000,responseTimeout=30000";
+                options.ConfigurationOptions = redisConfig;
                 options.InstanceName = "blazorCollaborativeAppCache"; 
             });
 

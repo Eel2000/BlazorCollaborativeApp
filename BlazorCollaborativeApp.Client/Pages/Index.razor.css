@@ -1,1 +1,26 @@
-﻿
+﻿.card {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    height: 320px;
+}
+
+    .card textarea {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        width: inherit;
+        height: 100%;
+        border: solid 0.8px gray;
+        border-color: #e7e7e7;
+    }
+
+    .card .card-body {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+    }
+

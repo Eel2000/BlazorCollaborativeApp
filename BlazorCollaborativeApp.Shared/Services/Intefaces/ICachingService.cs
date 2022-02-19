@@ -17,6 +17,14 @@ namespace BlazorCollaborativeApp.Shared.Services.Intefaces
         Task<T> GetAsync<T>(string key);
 
         /// <summary>
+        /// get data list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<IReadOnlyList<T>> GetListAsync<T>(string key);
+
+        /// <summary>
         /// set specific data to cache.
         /// </summary>
         /// <typeparam name="T">Data type.</typeparam>
@@ -24,5 +32,14 @@ namespace BlazorCollaborativeApp.Shared.Services.Intefaces
         /// <param name="value">Data to save.</param>
         /// <returns></returns>
         Task SetAsync<T>(string key, T value);
+        Task SetAsync<T>(string key, IList<T> value);
+
+        /// <summary>
+        /// Remove the specifique sheets
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task DeleteAsync(string key);
     }
 }

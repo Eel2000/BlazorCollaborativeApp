@@ -9,20 +9,41 @@
         <div class="col-8">
             <!--Sticky notes area-->
             <div class="container-fluid">
-                <StickyNotes BackGroundColor="yellow-bg" Sheets="@Sheets" Action="Remove"></StickyNotes>
+                <StickyNotes BackGroundColor="yellow-bg" Sheets="@Sheets" Action="Remove" EditAction="OnEdit"></StickyNotes>
             </div>
         </div>
         <div class="col-4">
             <div class="row">
-                <textarea type="text" id="typing-zone" class="form-control form-control-plaintext" style="height: 400px; width: 600px;" placeholder="type here the draft" @oninput="OnChangeAsync" value="@change"></textarea>
-            </div>
-            <div class="row">
-                <EditForm Model="@SheetModel" OnInvalidSubmit="@Send">
-                    <InputText @bind-Value="SheetModel.Title" class="form-control form-control-sm my-2 fp" style="width: 250px;" />
-                    <InputText @bind-Value="SheetModel.Data" class="form-control form-control-sm my-2 fp" style="width: 250px;" />
+               @* <textarea type="text" id="typing-zone" class="form-control form-control-plaintext" style="height: 200px; width: 600px;"
+                          placeholder="type here the draft" @oninput="OnChangeAsync" value="@change" readonly="@isBlocked" maxlength="@MAX_CHARACTERS">
 
-                    <button type="submit" @onclick="@Send" class="btn btn-primary text-white">Submit</button>
-                </EditForm>
+                </textarea>
+                <small class="form-text">@left</small>*@
+            </div>
+            <div class="row card shadow-lg">
+                <div class="card-header">
+                    <h5>Sticky Note</h5>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@SheetModel" OnInvalidSubmit="@Send">
+                        <div class="row">
+                            <input type="hidden" @bind-value="SheetModel.Id" />
+                            <div class="row px-5">
+                                <input @bind="SheetModel.Title" class="form-control form-control-sm my-2"  />
+                            </div>
+                            <div class="row mt-1 px-5">
+                                <textarea @bind="@SheetModel.Data" class="form-control form-control-plaintext"
+                                          maxlength="@MAX_CHARACTERS" @oninput="OnTyping" placeholder="Content" />
+                                <small class="form-text text-muted mb-2 mt-2">characteres left: @left</small>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" @onclick="@Send" class="btn btn-primary text-white">Submit <i class="fa fa-save"></i></button>
+                    <button type="submit" @onclick="@UpdateAsync" class="btn btn-secondary text-white">Update <i class="fa fa-async"></i></button>
+                    <button type="submit" @onclick="@OnCancel" class="btn btn-danger text-white">Cancel <i class="fa fa-discard"></i></button>
+                </div>
             </div>
         </div>
     </div>
