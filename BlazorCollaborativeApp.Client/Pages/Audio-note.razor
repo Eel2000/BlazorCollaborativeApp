@@ -1,0 +1,40 @@
+﻿<!-- Card -->
+@*<div class="card mt-5">*@
+
+<!-- Card image -->
+    @*<div class="view">
+    <img class="card-img-top" src="https://mdbootstrap.com/wp-content/uploads/2019/02/flam.jpg"
+    alt="Card image cap">
+    <a href="https://bachataurban.com/" target="_blank">
+    <div class="mask gradient-card"></div>
+    </a>
+    </div>
+*@
+<!-- Card content -->
+   @* <div class="card-body text-center">
+*@
+        @*<h5 class="h5 font-weight-bold"><a href="https://bachataurban.com/" target="_blank">Dj Flam</a></h5>
+    <p class="mb-0">Urban Bachata remix</p>*@
+
+<div class="row">
+    <div class="col-10">
+        <audio id="music" controls>
+            <source src="@SourceAudio">
+        </audio>
+    </div>
+    <div class="col-2">
+        <button type="button" class="kc_fab_main_btn" @onclick="PlayAsync"><i class="fa @classNameMic"></i></button>
+        <button type="button" class="kc_fab_main_btn" @onclick="StopAsync"><i class="fa @classNamePause"></i></button>
+    </div>
+</div>
+        @*<div id="audioplayer" @onclick="PlayOrPauseAsync">
+    <i id="pButton" class="fa fa-play"></i>
+    <div id="timeline">
+    <div id="playhead"></div>
+    </div>
+    </div>*@
+@*
+    </div>
+
+    </div>
+*@

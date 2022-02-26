@@ -1,5 +1,6 @@
 using BlazorCollaborativeApp.Server.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
+using BlazorCollaborativeApp.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,13 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
+builder.Services.RegisterServices(builder.Configuration);
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = "blazorCollaborativeApp";
+    options.IdleTimeout = TimeSpan.FromHours(24);
+});
+builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();
 
@@ -36,6 +44,7 @@ app.UseCors(x =>
     x.SetIsOriginAllowed(origin => true);
     x.AllowCredentials();
 });
+app.UseSession();
 
 app.UseRouting();
 

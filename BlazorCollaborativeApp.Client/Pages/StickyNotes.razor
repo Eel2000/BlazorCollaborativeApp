@@ -20,7 +20,7 @@
                                 }
                             </p>
                             <a @onclick="(()=>Action(item))" class="text-danger pull-right"><i class="fa fa-trash-o "></i></a>
-                            <a href="#" class="text-danger pull-right"><i class="fa fa-edit"></i></a>
+                            <a @onclick="(()=>EditAction(item))" class="text-danger pull-right"><i class="fa fa-edit"></i></a>
                         </div>
                     </li>
                 }
@@ -47,5 +47,11 @@
     /// The Action to call when clicking on delete note.
     /// </summary>
     [Parameter]
-    public Action<Sheet> Action { get; set; }
+    public Action<Sheet> Action { get; set; } = default!;
+
+    /// <summary>
+    /// The action for deleting
+    /// </summary>
+    [Parameter]
+    public Action<Sheet> EditAction { get; set; } = default!;
 }

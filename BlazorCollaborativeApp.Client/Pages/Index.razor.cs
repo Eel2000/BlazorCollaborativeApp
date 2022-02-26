@@ -2,12 +2,22 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Collections.ObjectModel;
+using BlazorCollaborativeApp.Shared.Services.Intefaces;
+using System.Net.Http.Json;
 
 namespace BlazorCollaborativeApp.Client.Pages
 {
     public partial class Index : ComponentBase
     {
-        const string sId = "1";
+        [Inject] HttpClient client { get; set; }
+        [Inject] ICachingService cachingService { get; set; }
+
+        const int MAX_CHARACTERS = 100;
+        int left = MAX_CHARACTERS;
+
+        bool isBlocked = false;
+
+        private string? sId;
         private string? Text { get; set; }
         private string? change { get; set; }
 
@@ -21,20 +31,32 @@ namespace BlazorCollaborativeApp.Client.Pages
         {
             hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7012/canal").WithAutomaticReconnect().Build();
 
+            //initilizing sheets
+            //FilledData();
+            Sheets = new ObservableCollection<Sheet>();
+
             hubConnection.On<string, object>("OnChange", (sId, Data) =>
              {
                  var chg = Data.ToString();
                  change = chg;
+                 left = left > 0 ? MAX_CHARACTERS - change.Count() : left + change.Count();
                  StateHasChanged();
                  Console.WriteLine(change);
              });
 
-            hubConnection.On<string, Sheet>("OnNoteAdded", (sId, Data) =>
+            hubConnection.On<string>("OnNoteAdded", async (sId) =>
              {
-                 var sheet = Data;
-                 Sheets.Add(sheet);
-                 StateHasChanged();
-                 Console.WriteLine("New Note received");
+                 //var sheet = Data;
+                 var sheet = await client.GetFromJsonAsync<Sheet>("https://localhost:7012/api/Caching/get-cached-data/" + sId);
+                 if (sheet is not null)
+                 {
+                     Sheets.Add(sheet);
+                     StateHasChanged();
+
+                     Console.WriteLine("New Note received");
+                     return;
+                 }
+                 Console.WriteLine("Noting for this session");
              });
 
             hubConnection.On<string, Sheet>("OnNoteDeleted", (sId, sheet) =>
@@ -45,11 +67,29 @@ namespace BlazorCollaborativeApp.Client.Pages
                 Console.WriteLine("A sheet was removed");
             });
 
+            hubConnection.On<string, Sheet>("OnNoteUpdated", (sId, sheet) =>
+             {
+                 var toUpdate = Sheets.FirstOrDefault(x => x.Id == sheet.Id);
+                 if (toUpdate is not null)
+                 {
+                     toUpdate.ProjectId = sheet.ProjectId;
+                     toUpdate.SessionId = sheet.SessionId;
+                     toUpdate.EditDate = sheet.EditDate;
+                     toUpdate.Contents = sheet.Contents;
+                     toUpdate.Title = sheet.Title;
+
+                     StateHasChanged();
+                     Console.WriteLine("Sheet has been updated");
+                     return;
+                 }
+
+                 Console.WriteLine("Unable to update this sheet, beause it was not found");
+                 return;
+             });
+
             await hubConnection.StartAsync();
 
-            //initilizing sheets
-            //FilledData();
-            Sheets = new ObservableCollection<Sheet>();
+
         }
 
         private void FilledData()
@@ -180,26 +220,51 @@ namespace BlazorCollaborativeApp.Client.Pages
         private async void Send()
         {
             var sheet = new Sheet();
-            sheet.Title = SheetModel?.Title;
+            sheet.Title = string.IsNullOrWhiteSpace(SheetModel?.Title) ? "Untitled Note" : SheetModel?.Title;
             sheet.Contents = new ObservableCollection<Content>
             {
                 new Content
                 {
                     SheetId = sheet.Id,
-                    Data = SheetModel?.Data,
+                    Data = string.IsNullOrWhiteSpace( SheetModel?.Data)?string.Empty:SheetModel?.Data,
                     Line = SheetModel.Line
                 }
             };
 
             Sheets.Add(sheet);
+            var res = await client.PostAsJsonAsync("https://localhost:7012/api/Caching/cache-data", sheet);
+            if (res.IsSuccessStatusCode)
+                sId = await res.Content.ReadAsStringAsync();
 
-            await hubConnection.InvokeAsync("AddNoteAsync", sId, sheet);
+            await hubConnection.InvokeAsync("AddNoteAsync", sheet.Id);
+            SheetModel = new();
+            left = MAX_CHARACTERS;
+            StateHasChanged();
         }
 
         private async void Remove(Sheet sheet)
         {
             Sheets.Remove(sheet);
             await hubConnection.InvokeAsync("RemoveNoteAsync", sId, sheet);
+            await client.DeleteAsync("https://localhost:7012/api/Caching/remove-from-cache/" + sId);
+        }
+
+        private async void UpdateAsync()
+        {
+            var toUpdate = Sheets.FirstOrDefault(x => x.Id == SheetModel!.Id);
+            if (toUpdate != null)
+            {
+                toUpdate.Title = SheetModel!.Title;
+                toUpdate.Contents.FirstOrDefault()!.Data = SheetModel.Data;
+
+                await client.PutAsJsonAsync("https://localhost:7012/api/Caching/update-cached-data", toUpdate);
+                await hubConnection.InvokeAsync("UpdateNoteAsync", sId, toUpdate);
+                Console.WriteLine("Updating");
+                SheetModel = new();
+                StateHasChanged();
+                return;
+            }
+            Console.WriteLine("Failed to update");
         }
 
         private async void OnChangeAsync(ChangeEventArgs change)
@@ -207,9 +272,29 @@ namespace BlazorCollaborativeApp.Client.Pages
             if (change != null)
             {
                 Text = change.Value.ToString();
+                left = left > 0 ? MAX_CHARACTERS - change.Value.ToString().Count() :
+                 left + change.Value.ToString().Count();
                 await hubConnection.InvokeAsync("NotifyChangesAsync", sId, change.Value);
             }
         }
+
+        private void OnTyping(ChangeEventArgs change)
+        {
+            left = left > 0 ? MAX_CHARACTERS - change.Value.ToString().Count() :
+                 left + change.Value.ToString().Count();
+        }
+
+        private void OnEdit(Sheet sheet)
+        {
+            SheetModel.Id = sheet.Id;
+            SheetModel.Title = sheet.Title;
+            SheetModel.Data = sheet.Contents?.SingleOrDefault()?.Data;
+            left = MAX_CHARACTERS - SheetModel.Data.Count();
+            StateHasChanged();
+        }
+
+        private void OnCancel() => SheetModel = new();
+
     }
 
     public class SheetModel
@@ -217,5 +302,6 @@ namespace BlazorCollaborativeApp.Client.Pages
         public string? Title { get; set; }
         public string? Data { get; set; }
         public int Line { get; set; }
+        public string? Id { get; set; }
     }
 }
