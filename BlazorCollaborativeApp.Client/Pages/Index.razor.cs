@@ -220,13 +220,13 @@ namespace BlazorCollaborativeApp.Client.Pages
         private async void Send()
         {
             var sheet = new Sheet();
-            sheet.Title = SheetModel?.Title;
+            sheet.Title = string.IsNullOrWhiteSpace(SheetModel?.Title) ? "Untitled Note" : SheetModel?.Title;
             sheet.Contents = new ObservableCollection<Content>
             {
                 new Content
                 {
                     SheetId = sheet.Id,
-                    Data = SheetModel?.Data,
+                    Data = string.IsNullOrWhiteSpace( SheetModel?.Data)?string.Empty:SheetModel?.Data,
                     Line = SheetModel.Line
                 }
             };
@@ -288,7 +288,7 @@ namespace BlazorCollaborativeApp.Client.Pages
         {
             SheetModel.Id = sheet.Id;
             SheetModel.Title = sheet.Title;
-            SheetModel.Data = sheet.Contents.First().Data;
+            SheetModel.Data = sheet.Contents?.SingleOrDefault()?.Data;
             left = MAX_CHARACTERS - SheetModel.Data.Count();
             StateHasChanged();
         }
